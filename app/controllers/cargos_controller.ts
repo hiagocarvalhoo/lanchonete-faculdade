@@ -10,7 +10,11 @@ export default class CargosController {
     }
 
     async show({ params }: HttpContext) {
-        return await Cargo.findOrFail(params.id)
+        return await Cargo.query()
+            .where('id', params.id)
+            .preload('funcionarios')
+            .first()
+
     }
 
     async store({ request }: HttpContext) {
@@ -18,10 +22,10 @@ export default class CargosController {
         return await Cargo.create(dados)
     }
 
-    async update({params, request}: HttpContext){
+    async update({ params, request }: HttpContext) {
         const cargos = await Cargo.findOrFail(params.id)
         const dados = request.only(['nome'])
-        
+
         cargos.merge(dados)
         return await cargos.save()
     }

@@ -1,19 +1,21 @@
 import type { HttpContext } from '@adonisjs/core/http'
-
 import Produto from "#models/produto";
 
 export default class ProdutosController {
 
-    async index({request}: HttpContext) {
-
-        const page = request.input('page', 1)
+    async index({ request }: HttpContext) {
+        const page = request.input('page', 3)
         const perPage = request.input('perPage', 10)
-
         return await Produto.query().paginate(page, perPage)
     }
 
     async show({ params }: HttpContext) {
-        return await Produto.findOrFail(params.id)
+        return await Produto.query()
+            .where('id', params.id)
+            .preload('tipo')
+            .preload('ingredientes')
+            .preload('comandas')
+            .first()
     }
 
     async store({ request }: HttpContext) {
